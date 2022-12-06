@@ -14,14 +14,12 @@ class DQN(nn.Module):
         self.lstm = nn.LSTM(256, 256, 1, batch_first=True)
         self.last_linear = nn.Linear(256, 3)
 
-
     # 1. network input shape: (batch_size, seq_length, num_features)
     # 2. LSTM output shape: (batch_size, seq_length, hidden_size)
     # 3. Linear input shape:  (batch_size * seq_length, hidden_size)
     # 4. Linear output: (batch_size * seq_length, out_size)
 
     def forward(self, input):
-
         x = self.first_two_layers(input)
 
         lstm_out, hs = self.lstm(x)

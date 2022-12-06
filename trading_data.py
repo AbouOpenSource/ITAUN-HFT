@@ -33,10 +33,8 @@ class Data:
         self.load()
 
     def load(self):
-        # to do list: build the json file for each stock
         self.closing = load_data_structure(self.closing_path)
         self.state_space = load_data_structure(self.states_path)
-        # print(len(self.state_space))
         self.it = self.iterator()
 
     def next(self):
