@@ -43,7 +43,7 @@ class Agent:
         tensor = torch.FloatTensor(state).to(device)
         tensor = tensor.unsqueeze(0)
         options = self.target_net(tensor)
-        return (np.argmax(options[-1].detach().cpu().numpy()) - 1)
+        return np.argmax(options[-1].detach().cpu().numpy()) - 1
 
     # return (np.argmax(options[0].detach().numpy()) - 1)
 
@@ -58,17 +58,11 @@ class Agent:
                     break
 
     def optimize(self, step):
-        # print(len(self.memory))
         if len(self.memory) < self.batch_size * 10:
             return
         transitions = self.memory.sample(self.batch_size)
-        # Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for
-        # detailed explanation). This converts batch-array of Transitions
-        # to Transition of batch-arrays.
         batch = Transition(*zip(*transitions))
 
-        # Compute a mask of non-final states and concatenate the batch elements
-        # (a final state would've been the one after which simulation ended)
         next_state = torch.FloatTensor(batch.next_state).to(device)
         non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, next_state)))
         non_final_next_states = torch.cat([s for s in next_state if s is not None])
@@ -77,10 +71,8 @@ class Agent:
         action_batch = torch.LongTensor(torch.add(torch.tensor(batch.action), torch.tensor(1))).to(device)
         reward_batch = torch.FloatTensor(batch.reward).to(device)
 
-
         l = self.policy_net(state_batch).size(0)
-        state_action_values = self.policy_net(state_batch)[95:l:96].gather(1,
-                                                                           action_batch.reshape((self.batch_size, 1)))
+        state_action_values = self.policy_net(state_batch)[95:l:96].gather(1, action_batch.reshape((self.batch_size, 1)))
         state_action_values = state_action_values.squeeze(-1)
 
         # Compute V(s_{t+1}) for all next states.
@@ -105,7 +97,6 @@ class Agent:
         self.optimizer.step()
 
         if step % self.T == 0:
-            # print('soft_update')
             gamma = 0.001
             param_before = copy.deepcopy(self.target_net)
             target_update = copy.deepcopy(self.target_net.state_dict())
@@ -113,4 +104,3 @@ class Agent:
                 target_update[k] = self.target_net.state_dict()[k] * (1 - gamma) + self.policy_net.state_dict()[
                     k] * gamma
             self.target_net.load_state_dict(target_update)
-

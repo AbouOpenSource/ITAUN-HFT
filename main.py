@@ -2,7 +2,6 @@ import argparse
 from trading_data import Data
 from env import TradingEnv, RunAgent
 from agent_trading import Agent
-from models import DQN
 import torch
 import numpy as np
 import random
@@ -16,9 +15,10 @@ def training(args):
     gamma = args.gamma  # discount factor # good value 0.0010 ---> 0.0050
     theta = args.para_target  # target network
     n_units = args.n_units  # number of units in a hidden layer
-    closing_path = os.path.join(args.root_path, 'data_closing/' + args.stock + '-closing.json')
-    states_path = os.path.join(args.root_path, 'data_states/' + args.stock + '-states.json')
 
+
+    closing_path = os.path.join(args.root_path, 'dataset/closing/' + args.stock + '-closing.json')
+    states_path = os.path.join(args.root_path,  'dataset/states/' + args.stock + '-states.json')
     RunAgent(TradingEnv(Data(closing_path, states_path, T)), Agent()).run(5000, args)
 
     # weight initialization!!
@@ -44,11 +44,11 @@ if __name__ == "__main__":
     torch.cuda.manual_seed(SEED)
     np.random.seed(SEED)
     random.seed(SEED)
-    file_path = './data_closing/'
+    file_path = 'dataset/closing/'
     datafile_list = os.listdir(file_path)
     for i in range(0, len(datafile_list)):
         args.stock = datafile_list[i][0:3]
-        if args.stock == 'AXP':
+        if args.stock == 'APP':
             continue
         print(args.stock)
         SEED = args.seed
