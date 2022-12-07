@@ -87,8 +87,8 @@ class TradingEnv:
         return actions, rewards, new_states, new_states[action + 1], done
 
     def print_stats(self, args):
-        save_data_structure(self.actions,    './results/action/' + args.stock + "_gamma_{:.4f}_action.json".format(0.1))
-        save_data_structure(self.portfolio,  './results/portfolio/' + args.stock + "_gamma_{:.4f}_portfolio.json".format(0.1))
+        save_data_structure(self.actions,    './results/action/' + args.stock + "_action.json")
+        save_data_structure(self.portfolio,  './results/portfolio/' + args.stock + "_portfolio.json")
 
 
 class RunAgent:
